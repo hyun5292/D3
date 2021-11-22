@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Learn About SVG in D3</title>
+    <title>Learn About SVG in D3 && Display Shapes with SVG</title>
     <style>
-        svg { background-color: pink; }
+        /*svg { background-color: pink; }*/
     </style>
 </head>
 <body>
@@ -19,8 +19,12 @@
         const svg = d3.select("body")
                         .append("svg")
                         .attr("width", w)
-                        .attr("height", h);
-
+                        .attr("height", h)
+                        .append("rect")
+                        .attr("width", 25)
+                        .attr("height", 100)
+                        .attr("x", 0)
+                        .attr("y", 0);
     </script>
 </body>
 </html>
@@ -46,4 +50,27 @@ applied to it in the style tag.
 Note: When using attr() width and height attributes do not have units. This is the building
 block of scaling - the element will always have a 5:1 width to height ratio, no matter what
 the zoom level is.
+--------------------------------------------------------------------------------------------
+//Display Shapes with SVG
+The last challenge created an svg element with a given width and height, which was visible
+because it had a background-color applied to it in the style tag. The code made space for
+the given width and height.
+
+The next step is to create a shape to put in the svg area. There are a number of supported
+shapes in SVG, such as rectangles and circles. They are used to display data. For example,
+a rectangle (<rect>) SVG shape could create a bar in a bar chart.
+
+When you place a shape into the svg area, you can specify where it goes with x and y 
+coordinates. The origin point of (0, 0) is in the upper-left corner. Positive values
+for x push the shape to the right, and positive values for y push the shape down from
+the origin point.
+
+To place a shape in the middle of the 500(width) x 100(height) svg from last challenge,
+the x coordinate would be 250 and the y coordinate would be 50.
+
+An SVG rect has four attributes. There are the x and y coordinates for where it is placed
+in the svg area. It also has a height and width to specify the size.
+------------------------------------------------------------------------------------------
+Add a rest shape to the svg using append(), and give it a width attribute of 25 and height
+attribute of 100. Also, give the rect x and y attributes each set to 0.
 -->
