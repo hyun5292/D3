@@ -16,7 +16,8 @@
                 .data(dataset)
                 .enter()
                 .append("h2")
-                .text("New Title");
+                //.text("New Title");
+                .text((d) => d);
     </script>
 </body>
 </html>
@@ -61,4 +62,27 @@ New item.
 Select the body node, then select all h2 elements. Have D3 create and append an h2 tag for each
 item in the dataset array. The text in the h2 should say New Title. Your code should use the 
 data() and enter() methods.
+-----------------------------------------------------------------------------------------------
+//Work With Dynamic Data in D3
+The last two challenges cover the basics of displaying data dynamically with D3 using the data()
+and enter() methods. These methods take a data set and, together with the append() method,
+create a new DOM element for each entry in the data set.
+
+In the previous challenge, you created a new h2 element for each item in the dataset array, but
+they all contained the same text, New Title. This is because you have not made use of the data
+that is bound to each of the h2 elements.
+
+The D3 text() method can take a string or a callback function as an argument:
+
+selection.text((d) => d)
+
+In the example above, the parameter d refers to a single entry in the dataset that a selection
+is bound to.
+
+Using the current example as context, the first h2 element is bound to 12, the second h2 element
+is bound to 31, the third h2 element is bound to 22, and so on.
+-----------------------------------------------------------------------------------------------
+Change the text() method so that each h2 element displays the corresponding value from the
+dataset array with a single space and the string USD. For example, the first heading should
+be 12 USD.
 -->
