@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Classes with D3</title>
+    <title>Add Classes with D3 && Update the Height of an Element Dynamically</title>
     <style>
         .bar {
             display: inline-block;
@@ -24,7 +24,11 @@
         .data(dataset)
         .enter()
         .append("div")
-        .attr("class", "bar");
+        .attr("class", "bar")
+        .style("height", d => `${d}px`);
+        //${} => EL(표현언어)
+        //#{}는 해당 값이 쓰일 때 값이 적용되는 지연 적용
+        //${}는 해석되는 즉시 값이 적용되는 즉시 적용
     </script>
 </body>
 </html>
@@ -43,4 +47,19 @@ Note that the class parameter will remain the same whenever you need to add a cl
 the container parameter will change.
 --------------------------------------------------------------------------------------------
 Add the attr() method to the code in the editor and put a class of bar on the div elements.
+--------------------------------------------------------------------------------------------
+//Update the Height of an Element Dynamically
+The previous challenges covered how to display data from an array and how to add CSS classes.
+You can combine these lessions to create a simple bar chart. There are two steps to this:
+
+1. Create a div for each data point in the array
+2. Give each div a dynamic height, using a callback function in the style() method that sets
+height equal to the data value
+
+Recall the format to set a style using a callback function:
+
+selection.style("cssProperty", (d) => d)
+--------------------------------------------------------------------------------------------
+Add the style() method to the code in the editor to set the height property for each element.
+Use a callback function to return the value of the data point with the string px added to it.
 -->
