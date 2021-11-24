@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add a Hover Effect to a D3 Element</title>
+    <title>Add a Hover Effect to a D3 Element && Add a Tooltip to a D3 Element</title>
     <style>
         .bar:hover {
             fill: brown;
@@ -33,7 +33,9 @@
            .attr("width", 25)
            .attr("height", (d, i) => d * 3)
            .attr("fill", "navy")
-           .attr("class", "bar");
+           .attr("class", "bar")
+           .append("title")
+           .text((d) => d);
 
         svg.selectAll("text")
            .data(dataset)
@@ -57,4 +59,14 @@ for your new class holds the style rules for any hover effects.
 ----------------------------------------------------------------------------------------------
 Use the attr() method to add a class of bar to all the rect elements. This changes the fill
 color of the bar to brown when you mouse over it.
+----------------------------------------------------------------------------------------------
+//Add a Tooltip to a D3 Element
+A tooltip shows more information about an item on a page when the user hboers over that item.
+There are several ways to add a tooltip to a visualization, this challenge uses the SVG title
+element.
+
+title pairs with the text() method to dynamically add data to the bars.
+----------------------------------------------------------------------------------------------
+Append a little element under each rect node. Then call the text() method with a callback 
+function so the text displays the data value.
 -->
