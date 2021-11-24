@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invert SVG Elements</title>
+    <title>Invert SVG Elements && Change the Color of an SVG Element</title>
 </head>
 <body>
     
@@ -28,7 +28,8 @@
                return 100 - d * 3;
            })
            .attr("width", 25)
-           .attr("height", (d, i) => d * 3);
+           .attr("height", (d, i) => d * 3)
+           .attr("fill", "navy");
     </script>
 </body>
 </html>
@@ -58,4 +59,13 @@ the height of the bar is 3 times the data value d.
 
 Note: In general, the relationship is y = h - m * d, where m is the constant that scales the
 data points.
+-------------------------------------------------------------------------------------------
+//Change the Color of an SVG Element
+The bars are in the right poisition, but they are all the same black color. SVG has a
+way to change the color of the bars.
+
+In SVG, a rect shape is colored with the fill attribute. It supports hex codes, color names
+and rgb values, as well as more complex options like gradients and transparency.
+-------------------------------------------------------------------------------------------
+Add an attr() method to set the fill of all the bars to the color navy.
 -->
