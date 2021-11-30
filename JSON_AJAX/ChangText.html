@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Change Text with click Events</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: "Helvetica", sans-serif;
+        }
+        h1 {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        .box {
+            border-radius: 5px;
+            padding: 20px 5px;
+            background-color: #eee;
+        }
+        button {
+            padding: 5px 10px 8px 10px;
+            border: 1px solid #4791d0;
+            border-radius: 5px;
+            color: white;
+            background-color: #4791d0;
+        }
+        button:hover {
+            border: 1px solid #0F5897;
+            background-color: #0F5897;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cat Photo Finder</h1>
+    <p class="message box">
+        The message will go here
+    </p>
+    <p>
+        <button id="getMessage">
+            Get Message
+        </button>
+    </p>
+    
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.1.1/d3.min.js"></script>-->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('getMessage').onclick = function() {
+                document.getElementsByClassName('message')[0].textContent = "Here is the message";
+            };
+        });
+    </script>
+</body>
+</html>
+<!--
+//Change Text with click Events
+When the click event happens, you can use JavaScript to update an HTML element.
+
+For example, when a user clicks the Get Message button, it changes the text of the element
+with the class message to say Here is the message.
+
+This works by adding the following code within the click event:
+
+document.getElementsByClassName('message')[0].textContent = "Here is the message";
+-----------------------------------------------------------------------------------------
+Add code inside the onclick event handler to change the text inside the message element to
+say Here is the message.
+-->
