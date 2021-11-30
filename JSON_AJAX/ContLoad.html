@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Handle Click Events with JavaScript using the onclick property</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: "Helvetica", sans-serif;
+        }
+        h1 {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        .box {
+            border-radius: 5px;
+            padding: 20px 5px;
+            background-color: #eee;
+        }
+        button {
+            padding: 5px 10px 8px 10px;
+            border: 1px solid #4791d0;
+            border-radius: 5px;
+            color: white;
+            background-color: #4791d0;
+        }
+        button:hover {
+            border: 1px solid #0F5897;
+            background-color: #0F5897;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cat Photo Finder</h1>
+    <p class="message box">
+        The message will go here
+    </p>
+    <p>
+        <button id="getMessage">
+            Get Message
+        </button>
+    </p>
+    
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.1.1/d3.min.js"></script>-->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('getMessage').onclick = function() {
+                
+            };
+        });
+    </script>
+</body>
+</html>
+<!--
+//Handle Click Events with JavaScript using the onclick property
+You want your code to execute only once your page has finished loading. For that purpose,
+you can attach a JavaScript event to the document called DOMContentLoaded. Here's the code
+that does this:
+
+document.addEventListener('DOMContentLoaded', function() {
+
+});
+
+You can implement event handlers that go inside of the DOMContentLoaded function. You 
+can implement an onclick event handler which triggers when the user clicks on the element
+with id getMessage, by adding the following code:
+
+document.getElementById('getMessage').onclick = function() {};
+-------------------------------------------------------------------------------------------
+Add a click event handler inside of the DOMContentLoaded function for the element with id
+of getMessage.
+-->
