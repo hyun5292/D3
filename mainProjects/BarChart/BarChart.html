@@ -87,24 +87,26 @@
                         .scaleTime()  //시간 범위를 뜻하겠지? 다른 종류 - scaleLinear(), scalePower()...
                         .domain([d3.min(yearsDate), xMax])  //범위를 최소 최대날짜로
                         .range([0, width]);  //넓이? 화면 넓이에 맞게
-            var xAxis = d3.axisBottom().scale(xScale);
+            var xAxis = d3.axisBottom().scale(xScale);  //axis = 축, 눈금 x축 설정 및 위치 Bottom
 
-            svgContainer.append('g')
-                        .call(xAxis)
+
+            svgContainer.append('g')  //그룹
+                        .call(xAxis)  //정의된 함수를 단 한 번만 실행
                         .attr('id', 'x-axis')
-                        .attr('transform', 'translate(60, 400)');
+                        .attr('transform', 'translate(60, 400)');  //이거 안하면 x축이 위로 가더라
             
             var GDP = data.data.map(function (item) {
-                return item[1];
+                return item[1];  //[ "1947-01-01", 243.1 ]에서 243.1
             });
 
             var scaledGDP = [];
 
-            var gdpMax = d3.max(GDP);
+            var gdpMax = d3.max(GDP);  //GDP 최대치
 
+            //y축이구나, 0부터 GDP최대치까지, 길이는 높이
             var linearScale = d3.scaleLinear().domain([0, gdpMax]).range([0, height]);
 
-            scaledGDP.GDP.map(function (item) {
+            scaledGDP = GDP.map(function (item) {
                 return linearScale(item);
             });
 
