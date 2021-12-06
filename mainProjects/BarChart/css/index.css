@@ -1,0 +1,88 @@
+.main {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  font-family: 'Roboto';
+  background-color: #708090;
+  background-size: 64px 128px;
+}
+
+.main .container {
+  position: relative;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -ms-flex-item-align: center;
+      align-self: center;
+  padding: 20px;
+  width: 900px;
+  height: 560px;
+  background-color: #fff;
+}
+
+.main .container #title {
+  text-align: center;
+  font-size: 2.5em;
+}
+
+.main .container .visHolder {
+  position: absolute;
+  top: 6em;
+}
+
+#tooltip {
+  position: absolute;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  padding: 2px;
+  width: 150px;
+  height: 50px;
+  -webkit-box-shadow: 1px 1px 10px;
+          box-shadow: 1px 1px 10px;
+  pointer-events: none;
+  text-align: center;
+  font: 12px;
+  border-radius: 2px;
+  background: lightsteelblue;
+}
+
+.overlay {
+  position: absolute;
+  pointer-events: none;
+  background: fff;
+}
+
+#y-axis path {
+  stroke: black;
+  stroke-width: 1;
+  fill: none;
+}
+
+#x-axis path {
+  stroke: black;
+  stroke-width: 1;
+  fill: none;
+}
+
+.info {
+  font-size: 0.8em;
+}

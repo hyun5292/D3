@@ -1,0 +1,18 @@
+.main { 
+    display: flex; width: 100vw; height: 100vh; align-items: center; justify-content: center; font-family: 'Roboto'; background-color: #708090; background-size: 64px 128px; 
+    .container { 
+        position: relative; display: flex; flex-direction: column; align-self: center; padding: 20px; width: 900px; height: 560px; background-color: #fff;
+        #title { text-align: center; font-size: 2.5em; }
+        .visHolder { position: absolute; top: 6em; }
+    }
+}
+
+#tooltip { position: absolute; display: flex; align-items: center; justify-content: center; padding: 2px; width: 150px; height: 50px; box-shadow: 1px 1px 10px; pointer-events: none; text-align: center; font: 12px; border-radius: 2px; background: lightsteelblue; }
+
+.overlay { position: absolute; pointer-events: none; background: fff; }
+
+#y-axis path { stroke: black; stroke-width: 1; fill: none; }
+
+#x-axis path { stroke: black; stroke-width: 1; fill: none; }
+
+.info { font-size: 0.8em; }
