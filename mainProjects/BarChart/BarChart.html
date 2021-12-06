@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300|Open+Sans' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="./css/default.css">
+    <link rel="stylesheet" href="./css/index.css">
     <title>D3 Bar Chart</title>
 </head>
 <body>
@@ -14,8 +17,158 @@
         </div>
     </div>
 
-    <script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.2.0/d3.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+    <script type="text/babel">
+        const projectName = 'bar-chart';
 
+        var width = 800, height = 400, barWidth = width / 275;
+        //<div id="tooltip" style="opacity:0;"></div> 
+        var tooltip = d3.select('.visHolder')
+                        .append('div')
+                        .attr('id', 'tooltip')
+                        .style('opacity', 0);
+        //<div class="overlay" style="opacity:0;"></div> 
+        var overlay = d3.select('.visHolder')  
+                        .append('div')
+                        .attr('class', 'overlay')
+                        .style('opacity', 0);
+        //<svg width="900" height="460"></svg>  그래프인가보군
+        var svgContainer = d3.select('.visHolder')
+                             .append('svg')  //svg 2차원 백터 그래픽?
+                             .attr('width', width + 100)
+                             .attr('height', height + 60);
+        d3.json(
+            'https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/GDP-data.json'
+        ).then((data) => {  //data가 링크에서 받아온 "data"구나
+            //텍스트 추가, 반시계 방향 90도 회전, 위치(-200, 80)
+            svgContainer.append('text')
+                        .attr('transform', 'rotate(-90)')
+                        .attr('x', -200)
+                        .attr('y', 80)
+                        .text('Gross Domestic Product');
+            
+            //텍스트 추가, 위치(520, 450) class="info"
+            svgContainer.append('text')
+                        .attr('x', width / 2 + 120)
+                        .attr('y', height + 50)
+                        .text('More Information: http://www.bea.gob/national/pdf/nipaguid.pdf')
+                        .attr('class', 'info');
+
+            //x축 연도?
+            //item이 [ "1947-01-01", 243.1 ] 이거 하나씩
+            var years = data.data.map(function (item) {  //map은 배열용 반복문ㅋㅋ 참고:https://github.com/hyun5292/JavaScript-ES6/commit/9d3f33767bb30163a346c1da9b0e3dd1f7e2a334
+                var quarter;
+                var temp = item[0].substring(5, 7);  //ex)"1957-01-01" -> 01
+
+                //12개월을 4단락으로 나눴구나 hover 했을 때 뜨는 것 고려해서
+                if(temp === '01') {  //1월
+                    quarter = 'Q1';
+                } else if(temp === '04') {  //4월
+                    quarter = 'Q2';
+                } else if(temp === '07') {  //7월
+                    quarter = 'Q3';
+                } else if(temp === '10') {  //10월
+                    quarter = 'Q4';
+                }
+
+                return item[0].substring(0, 4) + ' ' + quarter;  //ex)"1957-01-01" -> 1957
+            });
+
+            //년월일 ex)"1947-01-01"
+            var yearsDate = data.data.map(function (item) {
+                return new Date(item[0]);
+            });
+
+            //제일 큰 날짜구나
+            var xMax = new Date(d3.max(yearsDate));  //"2015-07-01"
+            xMax.setMonth(xMax.getMonth() + 3);  //3은 왜 더할까?
+            var xScale = d3  //scale은 어떤 범위의 숫자를 다른 범위의 숫자로 변경해주는 함수
+                        .scaleTime()  //시간 범위를 뜻하겠지? 다른 종류 - scaleLinear(), scalePower()...
+                        .domain([d3.min(yearsDate), xMax])  //범위를 최소 최대날짜로
+                        .range([0, width]);  //넓이? 화면 넓이에 맞게
+            var xAxis = d3.axisBottom().scale(xScale);
+
+            svgContainer.append('g')
+                        .call(xAxis)
+                        .attr('id', 'x-axis')
+                        .attr('transform', 'translate(60, 400)');
+            
+            var GDP = data.data.map(function (item) {
+                return item[1];
+            });
+
+            var scaledGDP = [];
+
+            var gdpMax = d3.max(GDP);
+
+            var linearScale = d3.scaleLinear().domain([0, gdpMax]).range([0, height]);
+
+            scaledGDP.GDP.map(function (item) {
+                return linearScale(item);
+            });
+
+            var yAxisScale = d3.scaleLinear().domain([0, gdpMax]).range([height, 0]);
+
+            var yAxis = d3.axisLeft(yAxisScale);
+
+            svgContainer.append('g')
+                        .call(yAxis)
+                        .attr('id', 'y-axis')
+                        .attr('transform', 'translate(60, 0)');
+
+            d3.select('svg')
+              .selectAll('rect')
+              .data(scaledGDP)
+              .enter()
+              .append('rect')
+              .attr('data-date', function(d, i) {
+                  return data.data[1][0];
+              })
+              .attr('data-gdp', function(d, i) {
+                  return data.data[i][1];
+              })
+              .attr('class', 'bar')
+              .attr('x', function(d, i) {
+                  return xScale(yearsDate[i]);
+              })
+              .attr('class', 'bar')
+              .attr('x', function (d, i) {
+                  return xScale(yearsDate[i]);
+              })
+              .attr('y', function (d) {
+                  return height - d;
+              })
+              .attr('width', barWidth)
+              .attr('height', function (d) {
+                  return d;
+              })
+              .attr('index', (d, i) => i)
+              .style('fill', '#33adff')
+              .attr('transform', 'translate(60, 0)')
+              .on('mouseover', function (event, d) {
+                    var i = this.getAttribute('index');
+
+                    overlay.translate()
+                           .duration(0)
+                           .style('height', d + 'px')
+                           .style('width', barWidth + 'px')
+                           .style('opacity', 0.9)
+                           .style('left', i * barWidth + 0 + 'px')
+                           .style('top', height - d + 'px')
+                           .style('transform', 'translateX(60px)');
+                    tooltip.transition().duration(200).style('opacity', 0.9);
+                    tooltip.html(
+                        years[i] + '<br>' + '$' + GDP[i].toFixed(1).replace(/(\d)(?=(\d{3})+\.)/g, '$1,') + 'Billion'
+                    ).attr('data-date', data.data[i][0])
+                     .style('left', i * barWidth + 30 + 'px')
+                     .style('top', height - 100 + 'px')
+                     .style('transform', 'translateX(60px)');
+              }).on('mouseout', function () {
+                tooltip.transition().duration(200).style('opacity', 0);
+                overlay.transition().duration(200).style('opacity', 0);
+              });
+          }).catch((e) => console.log(e));
     </script>
 </body>
 </html>
