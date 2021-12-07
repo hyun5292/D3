@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/default.css">
+    <link rel="stylesheet" href="./css/index.css">
+    <title>D3 Scatter Plot</title>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.2.0/d3.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+    <script type="text/babel">
+        var projectName = 'scatter-plot';
+
+        //이거 나도 깃허브에 json 파일 해놓으면 이렇게 쓸 수 있나?
+        var url = 'https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/cyclist-data.json';
+        // 처음 그릴 때 기준이 (0, 0)에서 시작하니까 거꾸로 그린다 생각해야지
+        var margin = {
+            top: 100,
+            right: 20,
+            bottom: 30,
+            left: 60
+        },
+        width = 920 - margin.left - margin.right,
+        height = 630 - margin.top - margin.bottom;
+
+        //근데 x축도 년도인데 왜 scaleLinear지...?
+        var x = d3.scaleLinear().range([0, width]);  //x축?
+        var y = d3.scaleTime().range([0, height]);  //y축?
+
+        //색상을 아예 정해놨구나 버전별로
+        //참고: https://steemit.com/kr-dev/@codingman/d3-js-color-scale
+        var color = d3.scaleOrdinal(d3.schemeCategory10);
+
+        var timeFormat = d3.timeFormat('%M:%S');
+        var xAxis = d3.axisBottom(x).tickFormat(d3.format('d'));  //x축 수치값 정하기
+        var yAxis = d3.axisLeft(y).tickFormat(timeFormat);  //y축 수치값 정하기
+        
+        //tooltip
+        var div = d3.select('body')
+                    .append('div')
+                    .attr('class', 'tooltip')
+                    .attr('id', 'tooltip')
+                    .style('opacity', 0);
+        
+        //그래프
+        var svg = d3.select('body')
+                    .append('svg')
+                    .attr('width', width + margin.left + margin.right)
+                    .attr('height', height + margin.top + margin.bottom)
+                    .attr('class', 'graph')
+                    .append('g')
+                    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+
+        d3.json(url)
+            .then((data) => {
+                data.forEach(function (d) {
+                    d.Place = +d.Place;  //json 파일안에 key가 "Place"
+                    var parsedTime = d.Time.split(':');
+                    //왜 1970년으로 설정하는거지?
+                    d.Time = new Date(1970, 0, 1, 0, parsedTime[0], parsedTime[1]);
+                });
+
+                //시각화할 데이터 값은 domain(), 그 값에 반환되는 값이 range()
+                x.domain([
+                    d3.min(data, function (d) {
+                        return d.Year - 1; 
+                    }),
+                    d3.max(data, function (d) {
+                        return d.Year + 1; 
+                    })
+                ]);
+                y.domain(
+                    d3.extent(data, function (d) {  //extent는 [최소, 최대]
+                        return d.Time;
+                    })
+                );
+
+                svg  //x축 그려주기
+                    .append('g')
+                    .attr('class', 'x axis')
+                    .attr('id', 'x-axis')
+                    .attr('transform', 'translate(0,' + height + ')')
+                    .call(xAxis)
+                    .append('text')
+                    .attr('class', 'x-axis-label')
+                    .attr('x', width)
+                    .attr('y', -6)  //그래프가 너무 제목이랑 겹치니까 내려줬군
+                    .style('text-anchor', 'end')  //font 정렬
+                    .text('Year');  //근데 Year 글씨는 어딨지
+
+                svg  //y축 그려주기
+                    .append('g')
+                    .attr('class', 'y axis')
+                    .attr('id', 'y-axis')
+                    .call(yAxis)
+                    .append('text')
+                    .attr('class', 'label')
+                    .attr('transform', 'rotate(-90)')  //
+                    .attr('y', 6)
+                    .attr('dy', '.71em')
+                    .style('text-anchor', 'end')
+                    .text('Best Time (minutes)');
+
+                svg  //왼쪽에 글씨 그리기
+                    .append('text')
+                    .attr('transform', 'rotate(-90)')
+                    .attr('x', -160)
+                    .attr('y', -44)
+                    .style('font-size', 18)
+                    .text('Time in Minutes');
+                
+                svg  //점들 그려주기
+                    .selectAll('.dot')
+                    .data(data)
+                    .enter()
+                    .append('circle')
+                    .attr('class', 'dot')
+                    .attr('r', 6)
+                    .attr('cx', function (d) {
+                        return x(d.Year);
+                    })
+                    .attr('cy', function (d) {
+                        return y(d.Time);
+                    })
+                    .attr('data-xvalue', function (d) {
+                        return d.Year;
+                    })
+                    .attr('data-yvalue', function (d) {
+                        return d.Time.toISOString();
+                    })
+                    .style('fill', function (d) {
+                        return color(d.Doping !== '');
+                    })
+                    //마우스 올렸을 때 뜨는 설명 Tooltip
+                    .on('mouseover', function (event, d) {
+                        div.style('opacity', 0.9);
+                        div.attr('data-year', d.Year);
+                        div.html(
+                            d.Name + ': ' + d.Nationality + '<br/>' 
+                            + 'Year: ' + d.Year + ', Time: ' + timeFormat(d.Time) 
+                            + (d.Doping ? '<br/><br/>' + d.Doping : '')
+                        )
+                        .style('left', event.pageX + 'px')
+                        .style('top', event.pageY - 28 + 'px');
+                    })
+                    .on('mouseout', function () {
+                        div.style('opacity', 0);
+                    });
+                
+                svg  //제목
+                    .append('text')
+                    .attr('id', 'title')
+                    .attr('x', width / 2)  //text-anchor가 middle이니까 가운데 오는구나!!
+                    .attr('y', 0 - margin.top / 2)
+                    .attr('text-anchor', 'middle')
+                    .style('font-size', '30px')
+                    .text('Doping in Professional Bicycle Racing');
+
+                svg  //부제목
+                    .append('text')
+                    .attr('x', width / 2)
+                    .attr('y', 0 - margin.top / 2 + 25)
+                    .attr('text-anchor', 'middle')
+                    .style('font-size', '20px')
+                    .text("35 Fastest times up Alpe d'Huez");
+
+                //오른쪽에 색깔하고 설명 말하는구나
+                var legendContainer = svg.append('g').attr('id', 'legend');
+                var legend = legendContainer
+                    .selectAll('#legend')
+                    .data(color.domain())
+                    .enter()
+                    .append('g')
+                    .attr('class', 'legend-label')
+                    .attr('transform', function (d, i) {
+                        return 'translate(0, ' + (height / 2 - i * 20) + ')';
+                    });
+                
+                legend  //색깔
+                    .append('rect')
+                    .attr('x', width - 18)
+                    .attr('width', 18)
+                    .attr('height', 18)
+                    .style('fill', color);
+
+                legend //설명
+                    .append('text')
+                    .attr('x', width - 24)
+                    .attr('y', 9)
+                    .attr('dy', '.35em')
+                    .style('text-anchor', 'end')
+                    .text(function (d) {
+                        //경우의 수가 많아지면 어쩌려구?
+                        if(d) {
+                            return 'Riders with doping allegations';
+                        } else {
+                            return 'No doping allegations';
+                        }
+                    });
+            }).catch((err) => console.log(err));
+
+    </script>
+</body>
+</html>
