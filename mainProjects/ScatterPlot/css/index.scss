@@ -1,0 +1,12 @@
+.graph { display: block; margin: auto; background-color: white; }
+
+body { width: 100%; height: 100%; font: 10px sans-serif; }
+
+.main { position: relative; }
+
+//crispEdges하니까 화질 안좋은 것 마냥 그러넹 참고:https://www.geeksforgeeks.org/css-shape-rendering-property/
+.axis path, .axis line { fill: none; stroke: #000; shape-rendering: crispEdges; }
+
+.dot { stroke: #000; opacity: 0.8; }
+
+div.tooltip { position: absolute; padding: 10px; border: 0px; border-radius: 8px; font: 12px sans-serif; pointer-events: none; background: lightsteelblue; }
