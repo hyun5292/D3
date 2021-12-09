@@ -10,8 +10,8 @@
 </head>
 <body>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.2.0/d3.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.0.4/d3.min.js"></script>
+    <script src="https://unpkg.com/d3-v6-tip@1.0.6/build/d3-v6-tip.js"></script>
     <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
     <script type="text/babel">
         const projectName = 'heat-map';
@@ -145,7 +145,7 @@
 
         d3.json(url)
                 .then((data) => callback(data))
-                .catch((err) => console.log(err));
+                .catch((err) => console.log("no" + err));
 
         function callback(data) {
             console.log('data: ', data);
@@ -293,9 +293,8 @@
                                             var array = [];
                                             var step = (max - min) / count;
                                             var base = min;
-                                            for(var i = 1; i < count; i++) {
-                                                console.log(base + i * step);
-                                                array.push(base + i * step);
+                                            for (var i = 1; i < count; i++) {
+                                            array.push(base + i * step);
                                             }
                                             return array;
                                         })(minTemp, maxTemp, legendColors.length)
@@ -319,8 +318,11 @@
                             .attr('id', 'legend')
                             .attr(
                                 'transform',
-                                'translate(' + padding.left + ',' 
-                                + (padding.top + height + padding.bottom - 2 * legendHeight) + ')'
+                                'translate(' +
+                                    padding.left +
+                                    ',' +
+                                    (padding.top + height + padding.bottom - 2 * legendHeight) +
+                                    ')'
                             );
             
             legend
@@ -329,10 +331,10 @@
                 .data(
                     legendThreshold.range().map(function (color) {
                         var d = legendThreshold.invertExtent(color);
-                        if(d[0] === null) {
+                        if (d[0] === null) {
                             d[0] = legendX.domain()[0];
                         }
-                        if(d[1] === null) {
+                        if (d[1] === null) {
                             d[1] = legendX.domain()[1];
                         }
                         return d;
@@ -350,7 +352,7 @@
                 )
                 .attr('height', legendHeight);
 
-            legend 
+            legend
                 .append('g')
                 .attr('transform', 'translate(' + 0 + ',' + legendHeight + ')')
                 .call(legendXAxis);
@@ -380,23 +382,26 @@
                 .attr('fill', function (d) {
                     return legendThreshold(data.baseTemperature + d.variance);
                 })
-                .on('mouseover', function(event, d) {
+                .on('mouseover', function (event, d) {
                     var date = new Date(d.year, d.month);
-                    var str = "<span class='date'>" 
-                        + d3.timeFormat('%Y - %B')(date)
-                        + "</span>"
-                        + "<br />"
-                        + "<span class='temperature'>"
-                        + d3.format('1.f')(data.baseTemperature + d.variance) 
-                        + "&#8451;" + "</span>" + "<br/>"
-                        + "<span class='variance'>"
-                        + d3.format('+.1f')(d.variance)
-                        + '&#8451;' + '</span>';
+                    var str =
+                        "<span class='date'>" +
+                        d3.timeFormat('%Y - %B')(date) +
+                        '</span>' +
+                        '<br />' +
+                        "<span class='temperature'>" +
+                        d3.format('.1f')(data.baseTemperature + d.variance) +
+                        '&#8451;' +
+                        '</span>' +
+                        '<br />' +
+                        "<span class='variance'>" +
+                        d3.format('+.1f')(d.variance) +
+                        '&#8451;' +
+                        '</span>';
                     tip.attr('data-year', d.year);
                     tip.show(str, this);
                 })
                 .on('mouseout', tip.hide);
-            
         }
     </script>
 </body>
