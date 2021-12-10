@@ -1,0 +1,13 @@
+body { display: flex; justify-content: center; align-items: center; }
+
+#main { display: flex; flex-direction: column; padding-top: 1rem; align-items: center; width: 100px; }
+
+.counties { fill: none; }
+
+.states { fill: none; stroke: #fff; stroke-linejoin: round; }
+
+div.tooltip { position: absolute; padding: 10px; border: 0px; border-radius: 2px; box-shadow: 1px 1px 10px rgba(128, 128, 128, 0.6); pointer-events: none; font: 12px Arial; background: rgba(255, 255, 204, 0.9); }
+
+#title { font-size: 3.5rem; }
+
+#description { margin-top: 1rem; align-self: flex-end; }
