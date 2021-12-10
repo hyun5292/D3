@@ -24,9 +24,184 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.0.4/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/geojson/0.2.0/geojson.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
     <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
     <script type="text/babel">
-        
+        const projectName = 'choropleth';
+
+        //html 컴포넌트 선언 변수들?ㅎ
+        var body = d3.select("body");
+        var svg = d3.select('svg');
+
+        //html 컴포넌트 추가 선언
+        var tooltip = body  //<div class="tooltip" id="tooltip"></div> 스타일은 주석에 추가 안함ㅎㅎ
+                        .append('div')
+                        .attr('class', 'tooltip')
+                        .attr('id', 'tooltip')
+                        .style('opacity', 0);
+        //GeoJSON은 다양한 지리적 데이터 구조를 인코딩하는 형식
+        //참고:https://life-of-panda.tistory.com/11
+        var path = d3.geoPath();  
+        //이거보니까 확실히 알겠네  참고:https://runebook.dev/ko/docs/d3/d3-scale
+        //이거 2.6이랑 75.1은 전체 색상 비율 조절하는? 수치얌
+        var x = d3.scaleLinear().domain([2.6, 75.1]).rangeRound([600, 860]);
+        var color = d3
+                    .scaleThreshold()
+                    .domain(d3.range(2.6, 75.1, (75.1 - 2.6)/8))  //대략 9니까 9씩 늘어나는거지
+                    .range(d3.schemeGreens[9]);  //초록색 그라데이션으로 해놨넹 굿굿
+        var g = svg  //<g class="key" id="legend"></g>
+                    .append('g')
+                    .attr('class', 'key')
+                    .attr('id', 'legend')
+                    .attr('transform', 'translate(0, 40)');
+
+        //그 색깔별로 몇 퍼인지 나타내는 표
+        g.selectAll('rect')
+            .data(  //값에따라 초록색 그라데이션으로 설정하는 건가
+                color.range().map(function (d) {
+                    d = color.invertExtent(d);
+                    if(d[0] === null) {
+                        d[0] = x.domain()[0];  //그럼 얘는 600인가?
+                    }
+                    if(d[1] === null) {
+                        d[1] = x.domain()[1];  //얘는 860이고?
+                    }
+                    return d;
+                })
+            )
+            .enter()
+            .append('rect')
+            .attr('height', 8)
+            .attr('x', function (d) {
+                return x(d[0]);
+            })
+            .attr('width', function (d) {
+                return d[0] && d[1] ? x(d[1]) - x(d[0]) : x(null);
+            })
+            .attr('fill', function (d) {
+                return color(d[0]);
+            })
+
+        //색상표 밑에 글씨
+        g.append('text')
+            .attr('class', 'caption')
+            .attr('x', x.range()[0])
+            .attr('y', -6)
+            .attr('fill', '#000')
+            .attr('text-anchor', 'start')
+            .attr('font-weight', 'bold');
+
+        g.call(
+            d3.axisBottom(x)  //수치가 2.6 ~ 75.1이니까 반올림해서 3부터 +9씩
+                .tickSize(13)
+                .tickFormat(function (x) {
+                    return Math.round(x) + '%';
+                })
+                .tickValues(color.domain())
+        )
+        .select('.domain')
+        .remove();
+
+        //json 파일 링크
+        const EDUCATION_FILE = 'https://raw.githubusercontent.com/no-stack-dub-sack/testable-projects-fcc/master/src/data/choropleth_map/for_user_education.json';
+        const COUNTY_FILE = 'https://raw.githubusercontent.com/no-stack-dub-sack/testable-projects-fcc/master/src/data/choropleth_map/counties.json';
+
+        //Promise.all()은 모든 프로미스가 이행되어야하는 메서드
+        Promise.all(d3.json(COUNTY_FILE), d3.json(EDUCATION_FILE))
+                //COUNTY_FILE이 data[0]이고 EDUCATION_FILE이 data[1]인가?
+                .then((data) => ready(data[0], data[1]))
+                .catch((err) => console.log(err));
+
+        //TopoJSON은 GeoJSON의 확장형으로 토폴로지를 인코딩
+        //참고:https://life-of-panda.tistory.com/11
+        function ready(us, education) {
+            svg.append('g')
+                .attr('class', 'counties')
+                .selectAll('path')
+                .data(topojson.feature(us, us.objects.counties).features)
+                .enter()
+                .append('path')
+                .attr('class', 'county')
+                //data-fips에다가 counties.json에 있는 id 할당해
+                .attr('data-fips', function (d) {
+                    return d.id;
+                })
+                //data-education에다가 counties.json이랑 education.json 비교해서 같은거 찾아서
+                //bachelorsOrHigher찾아서 할당해
+                .attr('data-education', function (d) {
+                    var result = education.filter(function (obj) {
+                        return obj.fips === d.id;  //진짜 같넹
+                    });
+                    if(result[0]) {
+                        return result[0].bachelorsOrHigher;
+                    }
+                    console.log('could find data for: ', d.id);
+                    return 0;
+                })
+                //data-education에다가 counties.json이랑 education.json 비교해서 같은거 찾아서
+                //color 중 bachelorsOrHigher에 해당하는 색상 할당해
+                .attr('fill', function (d) {
+                    var result = education.filter(function (obj) {
+                        return obj.fips === d.id;
+                    });
+                    if(result[0]) {
+                        return color(result[0].bachelorsOrHigher);
+                    }
+                    return color(0);
+                })
+                .attr('d', path)  //위에 변수 선언해놓은 d3.geoPath();
+                .on('mouseover', function (event, d) {
+                    tooltip.style('opacity', 0.9);  //opacity 0이었다가 0.9로 보여랏!
+                    tooltip.html(function () {
+                        //counties.json이랑 education.json 비교해서 같은거 찾아서
+                        var result = education.filter(function (obj) {
+                            return obj.fips === d.id;
+                        });
+                        if(result[0]) {
+                            return (
+                                result[0]['area-name'] +
+                                ', ' + 
+                                result[0]['state'] +
+                                ': ' +
+                                result[0].bachelorsOrHigher +
+                                '%'
+                            );
+                        }
+                        return 0;
+                    })
+                    //이건 왜 또 할까...? 지워도 변화는 없엉...
+                    .attr('data-education', function () {
+                        //counties.json이랑 education.json 비교해서 같은거 찾아서
+                        var result = education.filter(function (obj) {
+                            return obj.fips === d.id;
+                        });
+                        if(result[0]) {
+                            return result[0].bachelorsOrHigher;
+                        }
+                        return 0;
+                    })
+                    .style('left', event.pageX + 10 + 'px')  //마우스 기준 10px 옆으로
+                    .style('top', event.pageY - 28 + 'px');  //마우스 기준 28px 위로
+                })
+                .on('mouseout', function () {  //마우스 빼면 사라져랏!
+                    tooltip.style('opacity', 0);
+                });
+
+                //얘도 지워도 큰 변화는 없음
+                //지금은 데이터에 변화가 없어서 안써도 되지만
+                //혹시 시간별로 데이터가 리플라이 되는 경우 사용됨
+                //참고: https://stackoverflow.com/questions/13181194/d3js-when-to-use-datum-and-data
+                svg.append('path')
+                    .datum(
+                        topojson.mesh(us, us.objects.states, function (a, b) {
+                            return a !== b;
+                        })
+                    )
+                    .attr('class', 'states')
+                    .attr('d', path);
+        }
+
     </script>
 </body>
 </html>
