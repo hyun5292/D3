@@ -1,0 +1,13 @@
+svg { display: block; margin: auto; font: 10px sans-serif; text-align: center; }
+
+body { font-family: Arial, Helvetica, sans-serif; text-align: center; }
+
+.tile-text { cursor: default; }
+
+#title { margin-bottom: 10px; font-size: 45px; }
+
+#description { padding-bottom: 1.5rem; }
+
+div.tooltip { position: absolute; padding: 10px; border: 0; border-radius: 2px; box-shadow: 1px 1px 10px rgba(128, 128, 128, 0.6); pointer-events: none; font: 12px Arial; background: rgba(255, 255, 204, 0.95); }
+
+#legend { display: block; margin: auto; margin-bottom: 2rem; margin-top: 1rem; padding-bottom: 5px; font-size: 15px; text-align: center; }
